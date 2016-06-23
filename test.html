@@ -1,0 +1,195 @@
+<html>
+<head>
+<script type="text/javascript">
+    document.write("\<script src='http://code.jquery.com/jquery-latest.min.js' type='text/javascript'>\<\/script>");
+</script>
+<style>
+body {
+  margin:0;
+  padding:0;
+}
+#poswrap {
+  position:absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+#lines {
+  position:absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+#A {
+  width: 80px;
+  height: 160px;
+  background: red;
+}
+#B {
+  width: 90px;
+  height: 110px;
+  background: blue;
+}
+</style>
+</head>
+
+<body>
+<div id="poswrap">
+	<input type="text" id="Ax" />
+	<input type="text" id="Ay" />
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type="text" id="Bx" />
+	<input type="text" id="By" />
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type="checkbox" id="sideMounted" />
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type="submit" id="submit" value="Submit" />
+</div>
+<div id="A"><a href="#">A</a></div>
+<svg 
+  height="100%" 
+  width="100%"
+  id="lines">
+</svg>
+<div id="B">B</div>
+</body>
+<script>
+window.onload = function() {
+  // Get the vars 
+  var $A = $("#A");
+  var $B = $("#B");
+
+  // Set initial positions
+  var x_A_i = 100;
+  var y_A_i = 80;
+  var x_B_i = 400;
+  var y_B_i = 400;
+    		
+  // Set values of the inputs
+  $("#Ax").val(x_A_i);
+  $("#Ay").val(y_A_i);
+  $("#Bx").val(x_B_i);
+  $("#By").val(y_B_i);
+  
+  setPositions($A, $B);
+  
+  // Draw the lines between them
+  drawLines($A, $B);
+}
+
+$("#submit").click(function() {
+  // Get the vars 
+  var $A = $("#A");
+  var $B = $("#B");
+  
+  var sideMounted = $("#sideMounted").is(":checked");
+  
+  // Set new positions
+  setPositions($A, $B);
+  
+  // Draw the lines between them
+  drawLines($A, $B, sideMounted);
+});
+
+function setPositions($A, $B) {
+  var x_A = $("#Ax").val();
+  var y_A = $("#Ay").val();
+  var x_B = $("#Bx").val();
+  var y_B = $("#By").val();
+  
+  // Set the positions
+  $A.css("position", "absolute")
+  		.css("left", x_A)
+  		.css("top", y_A)
+  $B.css("position", "absolute")
+  		.css("left", x_B)
+  		.css("top", y_B);
+}
+
+function drawLines($A, $B, sideMounted) {  
+      var $lineContainer = $("#lines");
+	  
+	  $lineContainer.html("");
+	  
+	  w_A = $A.width();
+	  w_B = $B.width();
+	  h_A = $A.height();
+	  h_B = $B.height();
+	  x_A = $A.position().left;
+	  x_B = $B.position().left;
+	  y_A = $A.position().top;
+	  y_B = $B.position().top;
+	
+	  // Calculate the endpoints of the lines
+	  if (sideMounted) {
+		  // Mount the lines to the sides of the elements
+		  l1_x1 = x_A + w_A;
+		  l1_y1 = y_A + h_A/2;
+		  l1_x2 = (x_A + w_A + x_B) / 2;
+		  l1_y2 = y_A + h_A/2;
+		  
+		  l2_x1 = (x_A + w_A + x_B) / 2;
+		  l2_y1 = y_A + h_A/2;
+		  l2_x2 = (x_A + w_A + x_B) / 2;
+		  l2_y2 = y_B + h_B/2;
+		
+		  l3_x1 = (x_A + w_A + x_B) / 2;
+		  l3_y1 = y_B + h_B/2;
+		  l3_x2 = x_B;
+		  l3_y2 = y_B + h_B/2;
+	  } else {
+		  // Mount the lines to the tops and bottoms of the elements
+		  l1_x1 = x_A + w_A/2;
+		  l1_y1 = y_A + h_A;
+		  l1_x2 = x_A + w_A/2;
+		  l1_y2 = (y_A + h_A + y_B) / 2;
+		  
+		  l2_x1 = x_A + w_A/2;
+		  l2_y1 = (y_A + h_A + y_B) / 2;
+		  l2_x2 = x_B + w_B/2;
+		  l2_y2 = (y_A + h_A + y_B) / 2;
+		
+		  l3_x1 = x_B + w_B/2;
+		  l3_y1 = (y_A + h_A + y_B) / 2;
+		  l3_x2 = x_B + w_B/2;
+		  l3_y2 = y_B;	  
+	  }
+	  
+	  $line1 = $(document.createElementNS('http://www.w3.org/2000/svg','line'))
+	  		.attr("id", "line1")
+	  		.attr("fill", "none")
+	    	.attr("stroke", "#efc64a")
+	    	.attr("stroke-linecap", "round" )
+	    	.attr("stroke-dasharray", "2, 3") 
+	    	.attr("stroke-miterlimit", "10")
+	  		.attr("x1",l1_x1)
+			.attr("y1",l1_y1)
+			.attr("x2",l1_x2)
+			.attr("y2",l1_y2);
+	  $line2 = $(document.createElementNS('http://www.w3.org/2000/svg','line'))
+	  		.attr("id", "line2")
+	  		.attr("fill", "none")
+	    	.attr("stroke", "#efc64a")
+	    	.attr("stroke-linecap", "round" )
+	    	.attr("stroke-dasharray", "2, 3") 
+	    	.attr("stroke-miterlimit", "10")
+	  		.attr("x1",l2_x1)
+			.attr("y1",l2_y1)
+			.attr("x2",l2_x2)
+			.attr("y2",l2_y2);
+	  $line3 = $(document.createElementNS('http://www.w3.org/2000/svg','line'))
+	  		.attr("id", "line3")
+	  		.attr("fill", "none")
+	    	.attr("stroke", "#efc64a")
+	    	.attr("stroke-linecap", "round" )
+	    	.attr("stroke-dasharray", "2, 3") 
+	    	.attr("stroke-miterlimit", "10")
+	  		.attr("x1",l3_x1)
+			.attr("y1",l3_y1)
+			.attr("x2",l3_x2)
+			.attr("y2",l3_y2);
+	  $lineContainer.append($line1).append($line2).append($line3);
+  }
+
+</script>
+</html>
